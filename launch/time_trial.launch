@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<launch>
+
+  <!-- Gazebo Stuff -->
+  <arg name="use_sim_time" default="true" />
+  <arg name="gui" default="true" />
+  <arg name="headless" default="false" />
+
+  <arg name="world_name" default="/home/users/dperille/jackal_ws/src/jackal_simulator/jackal_gazebo/worlds/proc_world.world" />
+
+  <arg name="start_x" default="0" />
+  <arg name="start_y" default="0" /> 
+
+  <arg name="goal_x" default="0" />
+  <arg name="goal_y" default="0" /> 
+
+
+  <arg name="record_flag" default="false" />
+
+  <!-- Short-term hack to support the original front_laser:=true argument for spawning
+       the simulator. This will be removed in favour of using the config:=x arg instead. -->
+  <arg name="front_laser" default="false" />
+  <arg name="default_config" value="front_laser" if="$(arg front_laser)" />
+  <arg name="default_config" value="base" unless="$(arg front_laser)" /> 
+  <!-- end of hack -->
+
+  <!-- Configuration of Jackal which you would like to simulate.
+       See jackal_description for details. -->
+  <arg name="config" default="$(arg default_config)" />
+
+  <!-- Launch Gazebo with the specified world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="0" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="use_sim_time" value="$(arg use_sim_time)" />
+    <arg name="headless" value="$(arg headless)" />
+    <arg name="world_name" value="$(arg world_name)" />
+  </include>
+
+  <!-- Load Jackal's description, controllers, and teleop nodes. -->
+  <include file="$(find jackal_description)/launch/description.launch">
+    <arg name="config" value="$(arg config)" />
+  </include>
+  <include file="$(find jackal_control)/launch/control.launch" />
+  <include file="$(find jackal_control)/launch/teleop.launch">
+    <arg name="joystick" value="false"/>
+  </include>
+
+  <!-- Spawn Jackal -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+	     args="-urdf -model jackal -param robot_description -x $(arg start_x) -y $(arg start_y) -z 0" />
+
+
+
+
+
+
+
+
+  <!-- MoveBase -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+
+  <rosparam file="$(find jackal_navigation)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+  <rosparam file="$(find jackal_navigation)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+
+  <rosparam file="$(find jackal_navigation)/params/odom_nav_params/global_costmap_params.yaml" command="load" />
+  <rosparam file="$(find jackal_navigation)/params/odom_nav_params/local_costmap_params.yaml" command="load" />
+
+  <rosparam file="$(find jackal_navigation)/params/base_local_planner_params.yaml" command="load" />
+  <rosparam file="$(find jackal_navigation)/params/move_base_params.yaml" command="load" />
+
+  <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
+  <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+
+  <remap from="odom" to="odometry/filtered" />
+  
+  </node>
+
+  <include file="/home/users/dperille/jackal_ws/src/jackal_desktop/jackal_viz/launch/view_robot.launch">
+    <arg name="config" value="navigation" />
+  </include>
+
+
+  <!-- lifelong -->
+  <!--
+  <node pkg="jackal_lifelong" name="jackal_global_plan" type="jackal_global_plan.py" output="screen" />
+
+
+
+  <node pkg="jackal_lifelong" name="lifelong_learning" type="lifelong_learning.py" args="$(arg model_name)" output="screen">
+  <remap from="/cmd_vel" to="/cmd_vel_neural" />
+  </node>
+
+
+
+  <node pkg="jackal_lifelong" name="cmd_vel_selector" type="cmd_vel_selector.py" output="screen">
+  </node>-->
+
+
+  <!-- <node pkg="jackal_lifelong" name="cmd_vel_counter" type="cmd_vel_counter.py" output="screen">
+  </node> -->
+
+
+
+
+  <!-- recorder --> 
+  <!-- <node pkg="rosbag" type="record" name="recorder" output="screen" args="-O /home/xuesu/lifelong_data.bag /cmd_vel /front/scan /local_goal" if="$(arg record_flag)" /> -->
+
+  <!-- <node pkg="jackal_lifelong" name="data_logger" type="data_logger.py" output="screen" if="$(arg record_flag)">
+  </node> -->
+
+   <!-- publish goal -->
+  <node pkg="rostopic" type="rostopic" name="published_goal" args='pub -r 10 /move_base_simple/goal geometry_msgs/PoseStamped "{header: {stamp: now, frame_id: "odom"}, pose: {position: {x: $(arg goal_x), y: $(arg goal_y), z: 0.0}, orientation: {z: 0.7071068, w: 0.7071068}}}"' output="screen">
+  </node>
+
+
+
+   <!-- traversal_timer -->
+  <node pkg="jackal_timer" name="traversal_timer" type="traversal_timer.py" args="$(arg goal_x) $(arg goal_y)" output="screen" required = "true">
+  </node>
+
+
+
+
+
+</launch>
