@@ -7,7 +7,7 @@
   <arg name="gui" default="true" />
   <arg name="headless" default="false" />
 
-  <arg name="world_name" default="/home/users/dperille/jackal_ws/src/jackal_simulator/jackal_gazebo/worlds/proc_world.world" />
+  <arg name="world_name" default="$(find jackal_gazebo)/worlds/jackal_world.world" />
 
   <arg name="start_x" default="0" />
   <arg name="start_y" default="0" /> 
@@ -77,7 +77,7 @@
   
   </node>
 
-  <include file="/home/users/dperille/jackal_ws/src/jackal_desktop/jackal_viz/launch/view_robot.launch">
+  <include file="$(find jackal_viz)/launch/view_robot.launch">
     <arg name="config" value="navigation" />
   </include>
 
