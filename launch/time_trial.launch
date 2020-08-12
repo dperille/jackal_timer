@@ -54,12 +54,24 @@
 
 
 
+ <!-- Run the map server -->
+ <arg name="map_file" default="$(find jackal_timer)/maps/trial_map.yaml"/>
+ <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
+  <!--- Run AMCL -->
+ <include file="$(find jackal_navigation)/launch/include/amcl.launch">
+    <arg name="initial_pose_x" value="-1.5" />
+    <arg name="initial_pose_y" value="4" />
+    <arg name="initial_pose_a" value="1.57" />
+ </include>
 
+  <!--- Run Move Base -->
+ <include file="$(find jackal_navigation)/launch/include/move_base.launch" />
 
 
 
   <!-- MoveBase -->
+  <!--
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
 
   <rosparam file="$(find jackal_navigation)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
@@ -76,11 +88,11 @@
 
   <remap from="odom" to="odometry/filtered" />
   
-  </node>
+  </node> -->
 
   <include file="$(find jackal_viz)/launch/view_robot.launch">
-    <arg name="config" value="navigation" />
-  </include>
+    <arg name="config" value="localization" />
+  </include> 
 
 
   <!-- lifelong -->
