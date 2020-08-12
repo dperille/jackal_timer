@@ -60,8 +60,8 @@
 
   <!--- Run AMCL -->
  <include file="$(find jackal_navigation)/launch/include/amcl.launch">
-    <arg name="initial_pose_x" value="-1.5" />
-    <arg name="initial_pose_y" value="4" />
+    <arg name="initial_pose_x" value="$(arg start_x)" />
+    <arg name="initial_pose_y" value="$(arg start_y)"/>
     <arg name="initial_pose_a" value="1.57" />
  </include>
 
@@ -124,7 +124,7 @@
   </node> -->
 
    <!-- publish goal -->
-  <node pkg="rostopic" type="rostopic" name="published_goal" args='pub /move_base_simple/goal geometry_msgs/PoseStamped "{header: {stamp: now, frame_id: "odom"}, pose: {position: {x: $(arg goal_x), y: $(arg goal_y), z: 0.0}, orientation: {z: 0.7071068, w: 0.7071068}}}"' output="screen">
+  <node pkg="rostopic" type="rostopic" name="published_goal" args='pub /move_base_simple/goal geometry_msgs/PoseStamped "{header: {stamp: now, frame_id: "map"}, pose: {position: {x: $(arg goal_x), y: $(arg goal_y), z: 0.0}, orientation: {z: 0.7071068, w: 0.7071068}}}"' output="screen">
   </node>
 
 

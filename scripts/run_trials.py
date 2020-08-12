@@ -34,7 +34,7 @@ rospy.Subscriber('duration', Float32, callback)
 # output: their corresponding position in the gazebo world
 def path_coord_to_gazebo_coord(x, y):
     r_shift = -RADIUS - (25 * RADIUS * 2)
-    c_shift = RADIUS + 4.5
+    c_shift = RADIUS + 5
 
     gazebo_x = x * (RADIUS * 2) + r_shift
     gazebo_y = y * (RADIUS * 2) + c_shift
@@ -59,11 +59,12 @@ for num in range(0, len(os.listdir('../worlds'))):
 
     start_x, start_y = path_coord_to_gazebo_coord(path_start[0], path_start[1])
     goal_x, goal_y = path_coord_to_gazebo_coord(path_end[0], path_end[1])
-    
-    # published goal is relative to jackal's start position, not absolute coordinate
-    # so, treat jackal's starting position as (0, 0) to calculate goal position
-    goal_x = goal_x - start_x
-    goal_y = goal_y - start_y
+
+    # end point is currently provided in c-space, so we need to add in more distance
+    # for it to be in the obstacle space
+    # TODO - remove once start & end points are in obstacle space
+    goal_y += 3 * RADIUS * 2
+    start_y -= 1
 
     world_name = 'world_%d.world' % num
 
