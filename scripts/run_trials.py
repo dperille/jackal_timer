@@ -21,10 +21,9 @@ def callback(data):
 
     if data.data == -1.0:
         trial_running = False
-        print("TRIAL DONE")
     else:
         curr_duration = float(data.data)
-        print("%f" % curr_duration)
+        #print("%f" % curr_duration)
 
 # create node to listen to duration topic
 rospy.init_node('duration_listener', anonymous=True)
@@ -34,9 +33,9 @@ rospy.Subscriber('duration', Float32, callback)
 # output: their corresponding position in the gazebo world
 def path_coord_to_gazebo_coord(x, y):
     r_shift = -RADIUS - (25 * RADIUS * 2)
-    c_shift = RADIUS + 5
+    c_shift = RADIUS + 4.5
 
-    gazebo_x = x * (-RADIUS * 2) + r_shift
+    gazebo_x = x * (RADIUS * 2) + r_shift
     gazebo_y = y * (RADIUS * 2) + c_shift
 
     return (gazebo_x, gazebo_y)
@@ -51,13 +50,19 @@ for num in range(0, len(os.listdir('../worlds'))):
     path = np.load('../Generated Paths/path_%d.npy' % num)
     path_start = path[0]
     path_end = path[len(path)-1]
+    print(path_end)
 
     start_x, start_y = path_coord_to_gazebo_coord(path_start[0], path_start[1])
     goal_x, goal_y = path_coord_to_gazebo_coord(path_end[0], path_end[1])
+    
+    # published goal is relative to jackal's start position, not absolute coordinate
+    # so, treat jackal's starting position as (0, 0) to calculate goal position
+    goal_x = goal_x - start_x
+    goal_y = goal_y - start_y
 
     world_name = 'world_%d.world' % num
 
-    args_list = ['../launch/time_trial.launch', 'world_name:=$(find jackal_timer)/worlds/' + world_name, 'gui:=true', 'start_x:=' + str(start_x), 'start_y:=' + str(start_y), 
+    args_list = ['../launch/time_trial.launch', 'world_name:=$(find jackal_timer)/worlds/' + world_name, 'gui:=false', 'start_x:=' + str(start_x), 'start_y:=' + str(start_y), 
         'goal_x:=' + str(goal_x), 'goal_y:=' + str(goal_y), 'config:=front_laser']
     lifelong_args = args_list[1:]
     launch_files = [(roslaunch.rlutil.resolve_launch_arguments(args_list)[0], lifelong_args)]
