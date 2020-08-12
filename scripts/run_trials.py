@@ -14,10 +14,17 @@ roslaunch.configure_logging(uuid)
 
 # whenever listener node receives a message, update duration
 curr_duration = 0.0
+trial_running = True
 def callback(data):
     global curr_duration
-    curr_duration = float(data.data)
-    print("%f" % curr_duration)
+    global trial_running
+
+    if data.data == -1.0:
+        trial_running = False
+        print("TRIAL DONE")
+    else:
+        curr_duration = float(data.data)
+        print("%f" % curr_duration)
 
 # create node to listen to duration topic
 rospy.init_node('duration_listener', anonymous=True)
@@ -37,6 +44,7 @@ def path_coord_to_gazebo_coord(x, y):
 
 for num in range(0, len(os.listdir('../Generated Worlds'))):
     curr_duration = 0.0
+    trial_running = True
 
     # start and end points are currently sent as coordinates in jackal's c-space
     # with a cylinder radius of 0.075
@@ -58,4 +66,7 @@ for num in range(0, len(os.listdir('../Generated Worlds'))):
     parent = roslaunch.parent.ROSLaunchParent(uuid, launch_files)
     parent.start()
 
-    rospy.sleep(20)
+    while trial_running:
+        pass
+
+    parent.shutdown()

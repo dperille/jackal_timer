@@ -43,4 +43,5 @@ if __name__ == '__main__':
         duration = rospy.get_time() - start_time
         time_pub.publish(Float32(duration))
         if ((jackal.X-goal_x)**2)+((jackal.Y-goal_y)**2) < 0.1:
+            time_pub.publish(Float32(-1.0))
             rospy.signal_shutdown("Done")
