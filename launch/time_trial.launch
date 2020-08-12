@@ -11,6 +11,7 @@
 
   <arg name="start_x" default="0" />
   <arg name="start_y" default="0" /> 
+  <arg name="yaw" default="1.5708" />
 
   <arg name="goal_x" default="0" />
   <arg name="goal_y" default="0" /> 
@@ -49,7 +50,7 @@
 
   <!-- Spawn Jackal -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
-	     args="-urdf -model jackal -param robot_description -x $(arg start_x) -y $(arg start_y) -z 0" />
+	     args="-urdf -model jackal -param robot_description -x $(arg start_x) -y $(arg start_y) -z 0 -Y $(arg yaw)" />
 
 
 
