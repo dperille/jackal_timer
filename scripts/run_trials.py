@@ -8,6 +8,7 @@ import numpy as np
 from std_msgs.msg import String, Float32
 
 RADIUS = 0.075
+yaml_text = "image: map_pgm_%d.pgm\nresolution: 0.15\norigin: [-3.75, 0.0, 0]\noccupied_thresh: 0.50\nfree_thresh: 0.50\nnegate: 0"
 
 uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
 roslaunch.configure_logging(uuid)
@@ -42,6 +43,11 @@ def path_coord_to_gazebo_coord(x, y):
 
 
 for num in range(0, len(os.listdir('../worlds'))):
+    # write the map number to the .yaml file
+    yaml_file = open('../maps/trial_map.yaml', 'w')
+    yaml_file.write(yaml_text % (num))
+    yaml_file.close()
+    
     curr_duration = 0.0
     trial_running = True
 
@@ -50,7 +56,6 @@ for num in range(0, len(os.listdir('../worlds'))):
     path = np.load('../Generated Paths/path_%d.npy' % num)
     path_start = path[0]
     path_end = path[len(path)-1]
-    print(path_end)
 
     start_x, start_y = path_coord_to_gazebo_coord(path_start[0], path_start[1])
     goal_x, goal_y = path_coord_to_gazebo_coord(path_end[0], path_end[1])
