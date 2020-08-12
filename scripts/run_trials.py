@@ -42,7 +42,7 @@ def path_coord_to_gazebo_coord(x, y):
     return (gazebo_x, gazebo_y)
 
 
-for num in range(0, len(os.listdir('../Generated Worlds'))):
+for num in range(0, len(os.listdir('../worlds'))):
     curr_duration = 0.0
     trial_running = True
 
@@ -55,9 +55,9 @@ for num in range(0, len(os.listdir('../Generated Worlds'))):
     start_x, start_y = path_coord_to_gazebo_coord(path_start[0], path_start[1])
     goal_x, goal_y = path_coord_to_gazebo_coord(path_end[0], path_end[1])
 
-    world_name = '../Generated Worlds/world_%d.world' % num
+    world_name = 'world_%d.world' % num
 
-    args_list = ['../launch/time_trial.launch', 'world_name:=' + world_name , 'gui:=true', 'start_x:=' + str(start_x), 'start_y:=' + str(start_y), 
+    args_list = ['../launch/time_trial.launch', 'world_name:=$(find jackal_timer)/worlds/' + world_name, 'gui:=true', 'start_x:=' + str(start_x), 'start_y:=' + str(start_y), 
         'goal_x:=' + str(goal_x), 'goal_y:=' + str(goal_y), 'config:=front_laser']
     lifelong_args = args_list[1:]
     launch_files = [(roslaunch.rlutil.resolve_launch_arguments(args_list)[0], lifelong_args)]
