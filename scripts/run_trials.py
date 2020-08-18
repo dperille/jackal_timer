@@ -8,7 +8,6 @@ import numpy as np
 from std_msgs.msg import String, Float32
 
 RADIUS = 0.075
-yaml_text = "image: map_pgm_%d.pgm\nresolution: 0.15\norigin: [-3.75, 0.0, 0]\noccupied_thresh: 0.50\nfree_thresh: 0.50\nnegate: 0"
 
 uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
 roslaunch.configure_logging(uuid)
@@ -42,20 +41,17 @@ def path_coord_to_gazebo_coord(x, y):
     return (gazebo_x, gazebo_y)
 
 
-for num in range(0, len(os.listdir('../worlds'))):
-    # write the map number to the .yaml file
-    yaml_file = open('../maps/trial_map.yaml', 'w')
-    yaml_file.write(yaml_text % (num))
-    yaml_file.close()
+for num in range(0, len(os.listdir('../data/world_files'))):
     
     curr_duration = 0.0
     trial_running = True
 
     # start and end points are currently sent as coordinates in jackal's c-space
     # with a cylinder radius of 0.075
-    path = np.load('../Generated Paths/path_%d.npy' % num)
+    path = np.load('../data/path_files/path_%d.npy' % num)
     path_start = path[0]
     path_end = path[len(path)-1]
+    print(path_end)
 
     start_x, start_y = path_coord_to_gazebo_coord(path_start[0], path_start[1])
     goal_x, goal_y = path_coord_to_gazebo_coord(path_end[0], path_end[1])
@@ -68,8 +64,8 @@ for num in range(0, len(os.listdir('../worlds'))):
 
     world_name = 'world_%d.world' % num
 
-    args_list = ['../launch/time_trial.launch', 'world_name:=$(find jackal_timer)/worlds/' + world_name, 'gui:=false', 'start_x:=' + str(start_x), 'start_y:=' + str(start_y), 
-        'goal_x:=' + str(goal_x), 'goal_y:=' + str(goal_y), 'config:=front_laser']
+    args_list = ['../launch/time_trial.launch', 'world_name:=$(find jackal_timer)/data/world_files/' + world_name, 'gui:=true', 'start_x:=' + str(start_x), 'start_y:=' + str(start_y), 
+        'goal_x:=' + str(goal_x), 'goal_y:=' + str(goal_y), 'config:=front_laser', 'map_file:=$(find jackal_timer)/data/map_files/yaml_' + str(num) + '.yaml']
     lifelong_args = args_list[1:]
     launch_files = [(roslaunch.rlutil.resolve_launch_arguments(args_list)[0], lifelong_args)]
 

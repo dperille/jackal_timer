@@ -7,7 +7,7 @@
   <arg name="gui" default="true" />
   <arg name="headless" default="false" />
 
-  <arg name="world_name" default="$(find jackal_timer)/worlds/world_0.world" />
+  <arg name="world_name" default="$(find jackal_timer)/data/world_files/world_0.world" />
 
   <arg name="start_x" default="0" />
   <arg name="start_y" default="0" /> 
@@ -55,7 +55,7 @@
 
 
  <!-- Run the map server -->
- <arg name="map_file" default="$(find jackal_timer)/maps/trial_map.yaml"/>
+ <arg name="map_file" default="$(find jackal_timer)/data/map_files/yaml_0.yaml"/>
  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
   <!--- Run AMCL -->
