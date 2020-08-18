@@ -42,6 +42,7 @@ def path_coord_to_gazebo_coord(x, y):
 
 
 for num in range(0, len(os.listdir('../data/world_files'))):
+    fout = open('../time_results.txt', 'a')
     
     curr_duration = 0.0
     trial_running = True
@@ -61,9 +62,12 @@ for num in range(0, len(os.listdir('../data/world_files'))):
     goal_y += 6 * RADIUS * 2
     start_y -= 1
 
+    if start_x > -0.5:
+        start_x = -0.5
+
     world_name = 'world_%d.world' % num
 
-    args_list = ['../launch/time_trial.launch', 'world_name:=$(find jackal_timer)/data/world_files/' + world_name, 'gui:=true', 'start_x:=' + str(start_x), 'start_y:=' + str(start_y), 
+    args_list = ['../launch/time_trial.launch', 'world_name:=$(find jackal_timer)/data/world_files/' + world_name, 'gui:=false', 'start_x:=' + str(start_x), 'start_y:=' + str(start_y), 
         'goal_x:=' + str(goal_x), 'goal_y:=' + str(goal_y), 'config:=front_laser', 'map_file:=$(find jackal_timer)/data/map_files/yaml_' + str(num) + '.yaml']
     lifelong_args = args_list[1:]
     launch_files = [(roslaunch.rlutil.resolve_launch_arguments(args_list)[0], lifelong_args)]
@@ -72,7 +76,10 @@ for num in range(0, len(os.listdir('../data/world_files'))):
     parent = roslaunch.parent.ROSLaunchParent(uuid, launch_files)
     parent.start()
 
-    while trial_running:
+    while trial_running and curr_duration < 50.0:
         pass
+
+    fout.write('%d\n%f\n' % (num, curr_duration))
+    fout.close()
 
     parent.shutdown()
