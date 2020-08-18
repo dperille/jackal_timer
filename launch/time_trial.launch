@@ -146,7 +146,7 @@
 
 
    <!-- traversal_timer -->
-  <node pkg="jackal_timer" name="traversal_timer" type="traversal_timer.py" args="$(arg goal_x) $(arg goal_y)" output="screen" required = "true">
+  <node pkg="jackal_timer" name="traversal_timer" type="traversal_timer.py" args="$(arg goal_x) $(arg goal_y) $(arg start_x) $(arg start_y)" output="screen" required = "true">
   </node>
 
 

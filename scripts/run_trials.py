@@ -51,7 +51,6 @@ for num in range(0, len(os.listdir('../data/world_files'))):
     path = np.load('../data/path_files/path_%d.npy' % num)
     path_start = path[0]
     path_end = path[len(path)-1]
-    print(path_end)
 
     start_x, start_y = path_coord_to_gazebo_coord(path_start[0], path_start[1])
     goal_x, goal_y = path_coord_to_gazebo_coord(path_end[0], path_end[1])
@@ -59,7 +58,7 @@ for num in range(0, len(os.listdir('../data/world_files'))):
     # end point is currently provided in c-space, so we need to add in more distance
     # for it to be in the obstacle space
     # TODO - remove once start & end points are in obstacle space
-    goal_y += 3 * RADIUS * 2
+    goal_y += 6 * RADIUS * 2
     start_y -= 1
 
     world_name = 'world_%d.world' % num
