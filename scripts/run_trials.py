@@ -5,6 +5,7 @@ import roslaunch
 import rospy
 import rosnode
 import numpy as np
+import matplotlib.pyplot as plt
 from std_msgs.msg import String, Float32
 
 RADIUS = 0.075
@@ -32,7 +33,7 @@ rospy.Subscriber('duration', Float32, callback)
 # input: row and column from the occupancy grid
 # output: their corresponding position in the gazebo world
 def path_coord_to_gazebo_coord(x, y):
-    r_shift = -RADIUS - (25 * RADIUS * 2)
+    r_shift = -RADIUS - (30 * RADIUS * 2)
     c_shift = RADIUS + 5
 
     gazebo_x = x * (RADIUS * 2) + r_shift
@@ -59,11 +60,14 @@ for num in range(0, len(os.listdir('../data/world_files'))):
     # end point is currently provided in c-space, so we need to add in more distance
     # for it to be in the obstacle space
     # TODO - remove once start & end points are in obstacle space
-    goal_y += 6 * RADIUS * 2
+    goal_y += 2 * RADIUS * 2
     start_y -= 1
 
     if start_x > -0.5:
         start_x = -0.5
+    
+    if start_x < -3.9:
+        start_x = -3.9
 
     world_name = 'world_%d.world' % num
 
@@ -83,3 +87,4 @@ for num in range(0, len(os.listdir('../data/world_files'))):
     fout.close()
 
     parent.shutdown()
+    print("Finished %d" % num)
