@@ -79,7 +79,7 @@
     
     <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
     <param name="navfn/NavfnROS/use_dijkstra" type="bool" value="false"/>
-    <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+    <param name="base_local_planner" value="eband_local_planner/EBandPlannerROS"/>
     
     <remap from="odom" to="odometry/filtered" />
   </node>
