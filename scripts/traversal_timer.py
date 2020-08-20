@@ -29,8 +29,8 @@ class Robot():
 if __name__ == '__main__':
     goal_x = float(sys.argv[1])
     goal_y = float(sys.argv[2])
-    offset_x = float(sys.argv[3]) - 0.25
-    offset_y = float(sys.argv[4]) + 0.25
+    offset_x = float(sys.argv[3])
+    offset_y = float(sys.argv[4])
 
     jackal = Robot()
 
@@ -43,11 +43,18 @@ if __name__ == '__main__':
 
     while not rospy.is_shutdown():
         duration = rospy.get_time() - start_time
-        time_pub.publish(Float32(duration))
 
         jackal_x = jackal.X + offset_x
         jackal_y = jackal.Y + offset_y
+
+        # only start timer once jackal starts moving
+        if ((jackal_x - offset_x)**2)+((jackal_y - offset_y)**2) < 0.1:
+            duration = 0
+            start_time = rospy.get_time()
+
+        time_pub.publish(Float32(duration))
+
         
-        if ((jackal_x-goal_x)**2)+((jackal_y-goal_y)**2) < 0.2:
+        if ((jackal_x-goal_x)**2)+((jackal_y-goal_y)**2) < 0.1:
             time_pub.publish(Float32(-1.0))
             rospy.signal_shutdown("Done")
