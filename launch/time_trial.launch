@@ -7,7 +7,7 @@
   <arg name="gui" default="true" />
   <arg name="headless" default="false" />
 
-  <arg name="world_name" default="$(find jackal_timer)/data/world_files/world_0.world" />
+  <arg name="world_name" default="$(find jackal_timer)/benchmarking_dataset/world_files/world_0.world" />
 
   <arg name="start_x" default="0" />
   <arg name="start_y" default="0" />
