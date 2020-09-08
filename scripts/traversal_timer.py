@@ -44,8 +44,10 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         duration = rospy.get_time() - start_time
 
-        jackal_x = jackal.X + offset_x
-        jackal_y = jackal.Y + offset_y
+        #jackal_x = jackal.X + offset_x
+        #jackal_y = jackal.Y + offset_y
+        jackal_x = jackal.X
+        jackal_y = jackal.Y
 
         # only start timer once jackal starts moving
         if ((jackal_x - offset_x)**2)+((jackal_y - offset_y)**2) < 0.1:
@@ -55,6 +57,6 @@ if __name__ == '__main__':
         time_pub.publish(Float32(duration))
 
         
-        if ((jackal_x-goal_x)**2)+((jackal_y-goal_y)**2) < 0.1:
+        if ((jackal_x-goal_x)**2)+((jackal_y-goal_y)**2) < 0.15:
             time_pub.publish(Float32(-1.0))
             rospy.signal_shutdown("Done")

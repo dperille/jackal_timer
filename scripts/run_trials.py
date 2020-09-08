@@ -43,7 +43,9 @@ def path_coord_to_gazebo_coord(x, y):
 
 
 for num in range(0, len(os.listdir('../data/world_files'))):
-    fout = open('../time_results.txt', 'a')
+    # results are currently stored in a text file and moved to npy thereafter
+    # ### REPLACE this with the desired filename
+    fout = open('../altered_dwa_2.txt', 'a')
     
     curr_duration = 0.0
     trial_running = True
@@ -57,11 +59,9 @@ for num in range(0, len(os.listdir('../data/world_files'))):
     start_x, start_y = path_coord_to_gazebo_coord(path_start[0], path_start[1])
     goal_x, goal_y = path_coord_to_gazebo_coord(path_end[0], path_end[1])
 
-    # end point is currently provided in c-space, so we need to add in more distance
-    # for it to be in the obstacle space
-    # TODO - remove once start & end points are in obstacle space
     goal_y += 2 * RADIUS * 2
     start_y -= 1
+
 
     if start_x > -0.5:
         start_x = -0.5
@@ -69,10 +69,14 @@ for num in range(0, len(os.listdir('../data/world_files'))):
     if start_x < -3.9:
         start_x = -3.9
 
+    # goals are provided in odom frame, so make relative to jackal's start position
+    goal_x -= start_x
+    goal_y -= start_y
+
     world_name = 'world_%d.world' % num
 
     args_list = ['../launch/time_trial.launch', 'world_name:=$(find jackal_timer)/data/world_files/' + world_name, 'gui:=false', 'start_x:=' + str(start_x), 'start_y:=' + str(start_y), 
-        'goal_x:=' + str(goal_x), 'goal_y:=' + str(goal_y), 'config:=front_laser', 'map_file:=$(find jackal_timer)/data/map_files/yaml_' + str(num) + '.yaml']
+        'goal_x:=' + str(goal_x), 'goal_y:=' + str(goal_y), 'config:=front_laser']
     lifelong_args = args_list[1:]
     launch_files = [(roslaunch.rlutil.resolve_launch_arguments(args_list)[0], lifelong_args)]
 

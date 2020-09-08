@@ -10,7 +10,7 @@
   <arg name="world_name" default="$(find jackal_timer)/data/world_files/world_0.world" />
 
   <arg name="start_x" default="0" />
-  <arg name="start_y" default="0" /> 
+  <arg name="start_y" default="0" />
   <arg name="yaw" default="1.5708" />
 
   <arg name="goal_x" default="0" />
@@ -53,42 +53,21 @@
 	     args="-urdf -model jackal -param robot_description -x $(arg start_x) -y $(arg start_y) -z 0 -Y $(arg yaw)" />
 
 
-
- <!-- Run the map server -->
+<!--  Map server and AMCL - only if using global map
+  Run the map server
  <arg name="map_file" default="$(find jackal_timer)/data/map_files/yaml_0.yaml"/>
  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
 
-  <!--- Run AMCL -->
+  Run AMCL
  <include file="$(find jackal_navigation)/launch/include/amcl.launch">
     <arg name="initial_pose_x" value="$(arg start_x)" />
     <arg name="initial_pose_y" value="$(arg start_y)"/>
     <arg name="initial_pose_a" value="1.57" />
  </include>
+ -->
 
   <!--- Run Move Base -->
  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-
-    <rosparam file="$(find jackal_navigation)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
-    <rosparam file="$(find jackal_navigation)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
-    
-    <rosparam file="$(find jackal_navigation)/params/map_nav_params/local_costmap_params.yaml" command="load" />
-    <rosparam file="$(find jackal_navigation)/params/map_nav_params/global_costmap_params.yaml" command="load" />
-    
-    <rosparam file="$(find jackal_navigation)/params/base_local_planner_params.yaml" command="load" />
-    <rosparam file="$(find jackal_navigation)/params/move_base_params.yaml" command="load" />
-    
-    <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
-    <param name="navfn/NavfnROS/use_dijkstra" type="bool" value="false"/>
-    <param name="base_local_planner" value="eband_local_planner/EBandPlannerROS"/>
-    
-    <remap from="odom" to="odometry/filtered" />
-  </node>
-
-
-
-  <!-- MoveBase -->
-  <!--
-  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
 
   <rosparam file="$(find jackal_navigation)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
   <rosparam file="$(find jackal_navigation)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
@@ -103,44 +82,17 @@
   <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
 
   <remap from="odom" to="odometry/filtered" />
-  
-  </node> -->
+ </node>
 
+
+<!-- RVIZ
   <include file="$(find jackal_viz)/launch/view_robot.launch">
-    <arg name="config" value="localization" />
+    <arg name="config" value="navigation" />
   </include> 
-
-
-  <!-- lifelong -->
-  <!--
-  <node pkg="jackal_lifelong" name="jackal_global_plan" type="jackal_global_plan.py" output="screen" />
-
-
-
-  <node pkg="jackal_lifelong" name="lifelong_learning" type="lifelong_learning.py" args="$(arg model_name)" output="screen">
-  <remap from="/cmd_vel" to="/cmd_vel_neural" />
-  </node>
-
-
-
-  <node pkg="jackal_lifelong" name="cmd_vel_selector" type="cmd_vel_selector.py" output="screen">
-  </node>-->
-
-
-  <!-- <node pkg="jackal_lifelong" name="cmd_vel_counter" type="cmd_vel_counter.py" output="screen">
-  </node> -->
-
-
-
-
-  <!-- recorder --> 
-  <!-- <node pkg="rosbag" type="record" name="recorder" output="screen" args="-O /home/xuesu/lifelong_data.bag /cmd_vel /front/scan /local_goal" if="$(arg record_flag)" /> -->
-
-  <!-- <node pkg="jackal_lifelong" name="data_logger" type="data_logger.py" output="screen" if="$(arg record_flag)">
-  </node> -->
+-->
 
    <!-- publish goal -->
-  <node pkg="rostopic" type="rostopic" name="published_goal" args='pub -r 10 /move_base_simple/goal geometry_msgs/PoseStamped "{header: {stamp: now, frame_id: "map"}, pose: {position: {x: $(arg goal_x), y: $(arg goal_y), z: 0.0}, orientation: {z: 0.7071068, w: 0.7071068}}}"' output="screen">
+  <node pkg="rostopic" type="rostopic" name="published_goal" args='pub -r 10 /move_base_simple/goal geometry_msgs/PoseStamped "{header: {stamp: now, frame_id: "odom"}, pose: {position: {x: $(arg goal_x), y: $(arg goal_y), z: 0.0}, orientation: {z: 0.7071068, w: 0.7071068}}}"' output="screen">
   </node>
 
 
