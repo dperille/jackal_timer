@@ -42,7 +42,7 @@ def path_coord_to_gazebo_coord(x, y):
     return (gazebo_x, gazebo_y)
 
 
-for num in range(91, len(os.listdir('../benchmarking_dataset/world_files'))):
+for num in range(0, len(os.listdir('../benchmarking_dataset/world_files'))):
     # results are currently stored in a text file and moved to npy thereafter
     # ### REPLACE this with the desired filename
     fout = open('../altered_dwa_2.txt', 'a')
