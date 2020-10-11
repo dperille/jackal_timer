@@ -50,7 +50,7 @@ if __name__ == '__main__':
         jackal_y = jackal.Y
 
         # only start timer once jackal starts moving
-        if ((jackal_x - offset_x)**2)+((jackal_y - offset_y)**2) < 0.1:
+        if ((jackal_x - 0)**2)+((jackal_y - 0)**2) < 0.1:
             duration = 0
             start_time = rospy.get_time()
 
